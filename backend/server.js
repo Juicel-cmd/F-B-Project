@@ -5,8 +5,8 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const path = require('path');
 
-const { pool } = require('./src/database/db');
-const authRouter = require('./src/routes/authRoute');
+const { pool } = require('../src/database/db');
+const authRouter = require('../src/routes/authRoute');
 
 const app = express();
 
