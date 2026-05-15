@@ -1,7 +1,7 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const pool = require('../database/db');
+const { pool } = require('../database/db');
 
 const router = express.Router();
 
@@ -79,6 +79,7 @@ router.post('/login', async (req, res) => {
     }
 
     const token = generateToken(userData.id);
+    
 
     res.cookie('token', token, cookieOptions);
 
@@ -123,4 +124,4 @@ router.post('/logout', (req, res) => {
     res.json({ message: 'Logged out successfully' });
 });
 
-export default router;
+module.exports = router;

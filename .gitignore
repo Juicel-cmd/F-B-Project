@@ -1,2 +1,4 @@
 .emv
 node_modules
+
+.early.coverage

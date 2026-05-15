@@ -1,18 +1,17 @@
 require('dotenv').config();
 const { Pool } = require('pg');
+const { createClient } = require('@supabase/supabase-js');
 
-//linking database
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL
 });
 
-pool.on("connect", () => {
-    console.log("Connection pool established with database")
-    
-});
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_KEY
+);
 
-pool.on("error", (err) => {
-    console.error("Unexpected database error:", err.message);
-});
+pool.on('connect', () => console.log('DB pool connected'));
+pool.on('error', (err) => console.error('DB error:', err.message));
 
-module.exports = pool;
+module.exports = { pool, supabase };

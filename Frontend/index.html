@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>QuickBite Kiosk</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<!-- SCREENSAVER -->
+<div class="screensaver" id="screensaver" onclick="startSession()">
+  <div class="ss-logo">🍔</div>
+  <div class="ss-title">Quick<span>Bite</span></div>
+  <div class="ss-tap">👆 Tap anywhere to start your order</div>
+  <div class="ss-strips"></div>
+</div>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="brand">
+    <div class="brand-logo">QB</div>
+    <div class="brand-name">Quick<span>Bite</span></div>
+  </div>
+  <div class="topbar-center">Touch to Order</div>
+  <div class="topbar-right">
+    <div class="dine-toggle">
+      <button class="dine-btn active" onclick="setDine(this,'Dine In')">Dine In</button>
+      <button class="dine-btn" onclick="setDine(this,'Take Out')">Take Out</button>
+    </div>
+    <div class="time-display" id="clock">12:00</div>
+
+    <!-- USER AREA -->
+    <div class="user-area" id="user-area">
+      <!-- filled by JS -->
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- SIDEBAR CATEGORIES -->
+  <div class="sidebar">
+    <div class="cat-item active" onclick="setCategory(this,'Burgers')">
+      <div class="cat-icon-wrap">🍔</div>
+      <div class="cat-label">Burgers</div>
+    </div>
+    <div class="cat-item" onclick="setCategory(this,'Chicken')">
+      <div class="cat-icon-wrap">🍗</div>
+      <div class="cat-label">Chicken</div>
+    </div>
+    <div class="cat-item" onclick="setCategory(this,'Fries & Sides')">
+      <div class="cat-icon-wrap">🍟</div>
+      <div class="cat-label">Fries &amp; Sides</div>
+    </div>
+    <div class="cat-item" onclick="setCategory(this,'Rice Meals')">
+      <div class="cat-icon-wrap">🍚</div>
+      <div class="cat-label">Rice Meals</div>
+    </div>
+    <div class="cat-item" onclick="setCategory(this,'Beverages')">
+      <div class="cat-icon-wrap">🥤</div>
+      <div class="cat-label">Beverages</div>
+    </div>
+    <div class="cat-item" onclick="setCategory(this,'Desserts')">
+      <div class="cat-icon-wrap">🍦</div>
+      <div class="cat-label">Desserts</div>
+    </div>
+    <div class="cat-item" onclick="setCategory(this,'Value Meals')">
+      <div class="cat-icon-wrap">🎁</div>
+      <div class="cat-label">Value Meals</div>
+    </div>
+    <div class="cat-item" onclick="setCategory(this,'Breakfast')">
+      <div class="cat-icon-wrap">🥞</div>
+      <div class="cat-label">Breakfast</div>
+    </div>
+  </div>
+
+  <!-- MENU AREA -->
+  <div class="menu-area">
+    <div class="menu-header">
+      <h2 id="menu-title">Burgers</h2>
+      <div class="promo-pill">🔥 Today's Deals</div>
+    </div>
+    <div class="menu-grid" id="menu-grid"></div>
+  </div>
+
+  <!-- ORDER PANEL -->
+  <div class="order-panel">
+    <div class="order-header">
+      <h3>Your Order</h3>
+      <div class="order-count" id="order-count">0</div>
+    </div>
+    <div class="order-items" id="order-items">
+      <div class="empty-order" id="empty-order">
+        <div class="empty-icon">🛒</div>
+        <p>No items yet.<br>Tap a menu item to add it.</p>
+      </div>
+    </div>
+    <div class="order-summary">
+      <div class="summary-row"><span>Subtotal</span><span id="subtotal">₱0.00</span></div>
+      <div class="summary-row"><span>VAT (12%)</span><span id="vat">₱0.00</span></div>
+      <div class="summary-row total"><span>TOTAL</span><span id="total">₱0.00</span></div>
+      <button class="btn-checkout" id="checkout-btn" disabled onclick="checkout()">
+        Place Order →
+      </button>
+      <button class="btn-clear" onclick="clearOrder()">Clear Order</button>
+    </div>
+  </div>
+</div>
+
+<!-- CHECKOUT MODAL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="modal-top">
+      <div class="check">✅</div>
+      <h2>Order Placed!</h2>
+    </div>
+    <div class="modal-body">
+      <div class="order-num" id="modal-num">47</div>
+      <div class="order-num-label">Your Order Number</div>
+
+      <!-- POINTS EARNED THIS ORDER -->
+      <div class="points-earned" id="points-earned" style="display:none">
+        <div class="points-earned-inner">
+          <span class="pts-star">⭐</span>
+          <span id="pts-earned-text">+0 pts earned!</span>
+        </div>
+        <div class="pts-total">Total Points: <strong id="pts-total-text">0</strong></div>
+      </div>
+
+      <div class="modal-info">
+        Your order is being prepared. Please wait near the <strong>counter</strong> and we'll call your number when it's ready.
+        <br/><br/>
+        Estimated time: <strong>5–8 minutes</strong>
+      </div>
+      <button class="modal-close" onclick="closeModal()">Start New Order</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="kiosk-toast" id="toast"></div>
+
+<script src="script.js"></script>
+</body>
+</html>
