@@ -1,36 +1,31 @@
-
 require('dotenv').config();
 
-
 const express = require('express');
-const dotenv = require('dotenv');
-const cors = require('cors');
+const cors = require('cors'); 
 const cookieParser = require('cookie-parser');
 const path = require('path');
 
 const { pool } = require('./src/database/db');
 const authRouter = require('./src/routes/authRoute');
 
-dotenv.config();
-
 const app = express();
 
 // MIDDLEWARE
 app.use(cors({
-    origin: 'http://localhost:3000',
-    credentials: true
+  origin: ['http://localhost:3000', 'http://127.0.0.1:5500', 'http://localhost:5500'], 
+  credentials: true 
 }));
 app.use(express.json());
 app.use(cookieParser());
 
-// SERVE FRONTEND
+// SERVE STATIC FRONTEND FILES
 app.use(express.static(path.join(__dirname, 'Frontend')));
 
 // ROUTES
 app.use('/auth', authRouter);
 
-// TEST DATABASE CONNECTION
-app.get('/', async (req, res) => {
+// FIX 1: Move your root route to a specific path like '/db-test' so it doesn't hijack your website's home path
+app.get('/db-test', async (req, res) => {
     try {
         console.log("Start");
         const result = await pool.query("SELECT current_database()");
@@ -56,8 +51,13 @@ app.post('/reservation', async (req, res) => {
     }
 });
 
-// START SERVER
-const PORT = process.env.PORT || 3000;
+// FIX 2: Explicit fallback route to safely load your kiosk homepage on root paths
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'Frontend', 'index.html'));
+});
+
+// START EXPRESS RUNTIME
+const PORT = 5000;
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+    console.log(`Server is running on port ${PORT}`);
 });

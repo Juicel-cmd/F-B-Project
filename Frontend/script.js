@@ -22,7 +22,7 @@ const MENU = {
     {emoji:'🧀',name:'Cheese Fries',desc:'Loaded with creamy nacho cheese sauce',price:99,kcal:580,badge:'new'},
     {emoji:'🌭',name:'Loaded Hotdog',desc:'Jumbo hotdog, mustard, relish, onions',price:89,kcal:420,badge:''},
     {emoji:'🥗',name:'Side Salad',desc:'Fresh greens, cucumber, tomato & dressing',price:69,kcal:120,badge:''},
-    {emoji:'🧅',name:'Onion Rings',desc:'Crispy battered rings, served with ranch',price:85,kcal:380,badge:''},
+    {emoji:'🧅',name:'Onion Rings',desc:'Crispy battered rings, served with ranch',price:85,kcal:380,badge:'\''},
   ],
   'Rice Meals':[
     {emoji:'🍚',name:'Burger Steak + Rice',desc:'Juicy beef patties with mushroom gravy over steamed rice',price:155,kcal:680,badge:'hot'},
@@ -43,7 +43,7 @@ const MENU = {
     {emoji:'🍦',name:'Soft Serve Cone',desc:'Classic creamy vanilla soft serve',price:39,kcal:200,badge:'hot'},
     {emoji:'🍫',name:'Hot Fudge Sundae',desc:'Vanilla ice cream, rich hot fudge sauce',price:75,kcal:390,badge:''},
     {emoji:'🥧',name:'Buko Pie Slice',desc:'Flaky crust, tender young coconut filling',price:65,kcal:310,badge:'new'},
-    {emoji:'🍩',name:'Glazed Donut x2',desc:'Fluffy yeast donuts with sweet glaze',price:55,kcal:480,badge:''},
+    {emoji:'DONUT',name:'Glazed Donut x2',desc:'Fluffy yeast donuts with sweet glaze',price:55,kcal:480,badge:''},
     {emoji:'🎂',name:'Birthday Cake Slice',desc:'Vanilla sponge with sprinkles & cream',price:89,kcal:440,badge:''},
   ],
   'Value Meals':[
@@ -68,43 +68,57 @@ let dineMode = 'Dine In';
 let currentUser = null;
 let currentPoints = 0;
 
+// ── BOOT LOADER SYSTEM ──────────────────────────────────
+document.addEventListener("DOMContentLoaded", () => {
+  initUser();
+  updateClock();
+  setInterval(updateClock, 1000);
+  renderMenu();
+});
+
 // ── AUTH & USER INIT ──────────────────────────────────────
 function initUser() {
-  const stored = localStorage.getItem('user');
-  if (!stored) {
+  const token = localStorage.getItem('token');
+  const storedName = localStorage.getItem('username');
+  
+  if (!token || !storedName) {
+    currentUser = null;
     renderUserArea();
     return;
   }
-  currentUser = JSON.parse(stored);
+  
+  currentUser = { username: storedName };
   renderUserArea();
   fetchPoints();
 }
 
 function renderUserArea() {
   const area = document.getElementById('user-area');
+  if (!area) return;
+
   if (!currentUser) {
-    area.innerHTML = `<a href="login.html" class="topbar-login-btn">Login</a>`;
+    area.innerHTML = `<button class="btn-login-redirect" onclick="window.location.href='login.html'">Sign In</button>`;
     return;
   }
-  const initials = currentUser.username
-    ? currentUser.username.slice(0, 2).toUpperCase()
-    : '?';
+  
+  const initials = currentUser.username ? currentUser.username.slice(0, 2).toUpperCase() : 'QB';
   area.innerHTML = `
-    <div class="user-chip">
-      <div class="user-avatar">${initials}</div>
+    <div class="user-chip" style="display:flex; align-items:center; gap:10px;">
+      <div class="user-avatar" style="background:var(--yellow); color:#000; padding:5px; border-radius:50%; width:30px; height:30px; display:flex; align-items:center; justify-content:center; font-weight:bold;">${initials}</div>
       <div class="user-info">
-        <div class="user-name">${currentUser.username}</div>
-        <div class="user-pts" id="user-pts-display">⭐ loading...</div>
+        <div class="user-name" style="font-weight:bold;">${currentUser.username}</div>
+        <div class="user-pts" id="user-pts-display" style="color:var(--yellow); font-size:0.85rem;">⭐ loading...</div>
       </div>
     </div>
-    <button class="topbar-logout-btn" onclick="logout()">Logout</button>
+    <button class="topbar-logout-btn" onclick="logout()" style="background:transparent; border:1px solid #fff; color:#fff; cursor:pointer; margin-left:10px; padding:2px 8px; border-radius:4px;">Logout</button>
   `;
 }
 
 async function fetchPoints() {
   if (!currentUser) return;
   try {
-    const res = await fetch(`http://localhost:3000/points/${currentUser.id}`, {
+    // FIX: Redirected from 3000 to correct backend port 5000
+    const res = await fetch(`http://localhost:5000/points/${currentUser.username}`, {
       credentials: 'include'
     });
     if (!res.ok) return;
@@ -124,12 +138,15 @@ function updatePointsDisplay() {
 
 async function logout() {
   try {
-    await fetch('http://localhost:3000/auth/logout', {
+    // FIX: Redirected port mapping configuration to port 5000
+    await fetch('http://localhost:5000/auth/logout', {
       method: 'POST',
       credentials: 'include'
     });
   } catch (e) {}
-  localStorage.removeItem('user');
+  localStorage.removeItem('token');
+  localStorage.removeItem('username');
+  localStorage.removeItem('userPoints');
   window.location.href = 'login.html';
 }
 
@@ -137,11 +154,12 @@ async function logout() {
 async function addPoints(pointsToAdd) {
   if (!currentUser) return 0;
   try {
-    const res = await fetch('http://localhost:3000/points/add', {
+    // FIX: Target system API endpoints switched to port 5000
+    const res = await fetch('http://localhost:5000/points/add', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
-      body: JSON.stringify({ userId: currentUser.id, points: pointsToAdd })
+      body: JSON.stringify({ username: currentUser.username, points: pointsToAdd })
     });
     if (!res.ok) return currentPoints;
     const data = await res.json();
@@ -154,195 +172,139 @@ async function addPoints(pointsToAdd) {
   }
 }
 
-// ── SCREENSAVER ───────────────────────────────────────────
+// ── SCREENSAVER & KIOSK FUNCTIONS ───────────────────────────
 function startSession() {
-  document.getElementById('screensaver').classList.add('hidden');
+  document.getElementById('screensaver').style.display = 'none';
 }
 
-// ── DINE MODE ─────────────────────────────────────────────
-function setDine(btn, mode) {
-  document.querySelectorAll('.dine-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  dineMode = mode;
+function setDine(button, type) {
+  dineMode = type;
+  document.querySelectorAll('.dine-btn').forEach(btn => btn.classList.remove('active'));
+  button.classList.add('active');
+  showToast(`Switched to ${type}`);
 }
 
-// ── CATEGORIES ────────────────────────────────────────────
-function setCategory(el, cat) {
-  document.querySelectorAll('.cat-item').forEach(c => c.classList.remove('active'));
-  el.classList.add('active');
-  currentCategory = cat;
-  document.getElementById('menu-title').textContent = cat;
-  renderMenu(cat);
+function setCategory(element, category) {
+  currentCategory = category;
+  document.querySelectorAll('.cat-item').forEach(item => item.classList.remove('active'));
+  element.classList.add('active');
+  document.getElementById('menu-title').innerText = category;
+  renderMenu();
 }
 
-// ── RENDER MENU ───────────────────────────────────────────
-function renderMenu(cat) {
-  const grid  = document.getElementById('menu-grid');
-  const items = MENU[cat] || [];
+function renderMenu() {
+  const grid = document.getElementById('menu-grid');
+  if(!grid) return;
   grid.innerHTML = '';
-  items.forEach(item => {
-    const card = document.createElement('div');
-    card.className = 'item-card';
-    let badge = '';
-    if      (item.badge === 'hot')   badge = '<div class="badge badge-hot">🔥 Popular</div>';
-    else if (item.badge === 'new')   badge = '<div class="badge badge-new">✨ New</div>';
-    else if (item.badge === 'value') badge = '<div class="badge badge-value">💰 Value</div>';
-    else if (item.badge === 'promo') badge = '<div class="badge badge-promo">🎉 Promo</div>';
-    const kcalStr  = item.kcal > 0 ? `<div class="item-kcal">${item.kcal} kcal</div>` : '';
-    const safeName = item.name.replace(/'/g, "\\'");
-    card.innerHTML = `
-      <div class="item-img">${badge}${item.emoji}</div>
-      <div class="item-info">
-        <div class="item-name">${item.name}</div>
-        <div class="item-desc">${item.desc}</div>
-        <div class="item-bottom">
-          <div>
-            <div class="item-price">₱${item.price}</div>
-            ${kcalStr}
-          </div>
-          <button class="add-btn" onclick="addItem(event,'${safeName}',${item.price},'${item.emoji}')">+</button>
-        </div>
-      </div>`;
-    card.onclick = (e) => {
-      if (!e.target.classList.contains('add-btn'))
-        addItem(e, item.name, item.price, item.emoji);
-    };
-    grid.appendChild(card);
+  const items = MENU[currentCategory] || [];
+  
+  items.forEach((item, index) => {
+    grid.innerHTML += `
+      <div class="menu-card" onclick="addToCart('${item.name}', ${item.price})" style="background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:15px; text-align:center; cursor:pointer;">
+        <div class="menu-card-icon" style="font-size:2rem; margin-bottom:5px;">${item.emoji}</div>
+        <h4 style="margin:5px 0;">${item.name}</h4>
+        <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:8px;">${item.desc}</p>
+        <strong style="color:var(--yellow);">₱${item.price.toFixed(2)}</strong>
+      </div>
+    `;
   });
 }
 
-// ── CART ACTIONS ──────────────────────────────────────────
-function addItem(e, name, price, emoji) {
-  e.stopPropagation();
-  const existing = cart.find(i => i.name === name);
-  if (existing) { existing.qty++; }
-  else { cart.push({ name, price, emoji, qty: 1 }); }
-  renderCart();
-  showToast(`${emoji} ${name} added!`);
-  const btn = e.target.closest ? e.target.closest('.add-btn') || e.target : e.target;
-  if (btn) { btn.style.transform = 'scale(0.85)'; setTimeout(() => btn.style.transform = '', 120); }
+function addToCart(name, price) {
+  const exist = cart.find(item => item.name === name);
+  if (exist) { exist.quantity++; } 
+  else { cart.push({ name, price, quantity: 1 }); }
+  updateCartUI();
+  showToast(`${name} added!`);
 }
 
-function removeItem(name) {
-  cart = cart.filter(i => i.name !== name);
-  renderCart();
+function updateCartUI() {
+  const itemsContainer = document.getElementById('order-items');
+  const emptyView = document.getElementById('empty-order');
+  if(!itemsContainer) return;
+  
+  if(cart.length === 0) {
+    if(emptyView) emptyView.style.display = 'block';
+    document.querySelectorAll('.order-item-row').forEach(e => e.remove());
+    document.getElementById('checkout-btn').disabled = true;
+    updatePrices(0);
+    return;
+  }
+  
+  if(emptyView) emptyView.style.display = 'none';
+  document.querySelectorAll('.order-item-row').forEach(e => e.remove());
+  
+  let subtotal = 0;
+  cart.forEach(item => {
+    subtotal += item.price * item.quantity;
+    const row = document.createElement('div');
+    row.className = 'order-item-row';
+    row.style.display = 'flex';
+    row.style.justifyContent = 'space-between';
+    row.style.padding = '8px 0';
+    row.style.borderBottom = '1px solid var(--border)';
+    row.innerHTML = `
+      <div>${item.name} x${item.quantity}</div>
+      <div>₱${(item.price * item.quantity).toFixed(2)}</div>
+    `;
+    itemsContainer.appendChild(row);
+  });
+  
+  updatePrices(subtotal);
+  document.getElementById('checkout-btn').disabled = false;
+  document.getElementById('order-count').innerText = cart.reduce((a, b) => a + b.quantity, 0);
 }
 
-function changeQty(name, delta) {
-  const item = cart.find(i => i.name === name);
-  if (!item) return;
-  item.qty += delta;
-  if (item.qty <= 0) cart = cart.filter(i => i.name !== name);
-  renderCart();
+function updatePrices(subtotal) {
+  const vat = subtotal * 0.12;
+  const total = subtotal + vat;
+  document.getElementById('subtotal').innerText = `₱${subtotal.toFixed(2)}`;
+  document.getElementById('vat').innerText = `₱${vat.toFixed(2)}`;
+  document.getElementById('total').innerText = `₱${total.toFixed(2)}`;
+}
+
+async function checkout() {
+  const totalAmount = parseFloat(document.getElementById('total').innerText.replace('₱', ''));
+  const randomOrderNum = Math.floor(Math.random() * 90) + 10;
+  document.getElementById('modal-num').innerText = randomOrderNum;
+
+  if (currentUser) {
+    const earned = Math.floor(totalAmount / 50); 
+    const finalPoints = await addPoints(earned);
+
+    document.getElementById('pts-earned-text').innerText = `+${earned} pts earned!`;
+    document.getElementById('pts-total-text').innerText = finalPoints;
+    document.getElementById('points-earned').style.display = 'block';
+  } else {
+    document.getElementById('points-earned').style.display = 'none';
+  }
+
+  document.getElementById('modal').classList.add('active');
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('active');
+  clearOrder();
+  document.getElementById('screensaver').style.display = 'flex';
 }
 
 function clearOrder() {
   cart = [];
-  renderCart();
+  updateCartUI();
+  document.getElementById('order-count').innerText = 0;
 }
 
-// ── RENDER CART ───────────────────────────────────────────
-function renderCart() {
-  const container   = document.getElementById('order-items');
-  const countEl     = document.getElementById('order-count');
-  const checkoutBtn = document.getElementById('checkout-btn');
-  const totalQty    = cart.reduce((a, i) => a + i.qty, 0);
-  countEl.textContent = totalQty;
-
-  if (cart.length === 0) {
-    container.innerHTML = `
-      <div class="empty-order">
-        <div class="empty-icon">🛒</div>
-        <p>No items yet.<br>Tap a menu item to add it.</p>
-      </div>`;
-    checkoutBtn.disabled = true;
-    updateTotals(0);
-    return;
-  }
-
-  container.innerHTML = '';
-  cart.forEach(item => {
-    const safeName = item.name.replace(/'/g, "\\'");
-    const div = document.createElement('div');
-    div.className = 'order-item';
-    div.innerHTML = `
-      <div class="oi-emoji">${item.emoji}</div>
-      <div class="oi-info">
-        <div class="oi-name">${item.name}</div>
-        <div class="oi-price">₱${(item.price * item.qty).toFixed(2)}</div>
-      </div>
-      <div class="oi-qty">
-        <button class="qty-btn" onclick="changeQty('${safeName}', -1)">−</button>
-        <span class="qty-num">${item.qty}</span>
-        <button class="qty-btn" onclick="changeQty('${safeName}', 1)">+</button>
-      </div>
-      <div class="oi-remove" onclick="removeItem('${safeName}')">✕</div>`;
-    container.appendChild(div);
-  });
-
-  const subtotal = cart.reduce((a, i) => a + i.price * i.qty, 0);
-  updateTotals(subtotal);
-  checkoutBtn.disabled = false;
-}
-
-function updateTotals(subtotal) {
-  const vat   = subtotal * 0.12;
-  const total = subtotal + vat;
-  document.getElementById('subtotal').textContent = '₱' + subtotal.toFixed(2);
-  document.getElementById('vat').textContent      = '₱' + vat.toFixed(2);
-  document.getElementById('total').textContent    = '₱' + total.toFixed(2);
-}
-
-// ── CHECKOUT ──────────────────────────────────────────────
-async function checkout() {
-  const num = Math.floor(Math.random() * 90) + 10;
-  document.getElementById('modal-num').textContent = num;
-
-  // 1 point per item ordered
-  const totalItems  = cart.reduce((a, i) => a + i.qty, 0);
-  const pointsBlock = document.getElementById('points-earned');
-
-  if (currentUser && totalItems > 0) {
-    const newTotal = await addPoints(totalItems);
-    document.getElementById('pts-earned-text').textContent = `+${totalItems} pt${totalItems !== 1 ? 's' : ''} earned!`;
-    document.getElementById('pts-total-text').textContent  = newTotal;
-    pointsBlock.style.display = 'block';
-  } else {
-    pointsBlock.style.display = 'none';
-  }
-
-  document.getElementById('modal').classList.add('open');
-}
-
-function closeModal() {
-  document.getElementById('modal').classList.remove('open');
-  cart = [];
-  renderCart();
-  document.getElementById('screensaver').classList.remove('hidden');
-}
-
-// ── TOAST ─────────────────────────────────────────────────
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  clearTimeout(t._t);
-  t._t = setTimeout(() => t.classList.remove('show'), 2000);
-}
-
-// ── CLOCK ─────────────────────────────────────────────────
 function updateClock() {
-  const now  = new Date();
-  let h      = now.getHours();
-  const m    = now.getMinutes();
-  const ampm = h >= 12 ? 'PM' : 'AM';
-  h = h % 12 || 12;
-  document.getElementById('clock').textContent =
-    `${h}:${m.toString().padStart(2, '0')} ${ampm}`;
+  const clockEl = document.getElementById('clock');
+  if(!clockEl) return;
+  const now = new Date();
+  clockEl.innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 }
 
-// ── INIT ──────────────────────────────────────────────────
-initUser();
-renderMenu('Burgers');
-updateClock();
-setInterval(updateClock, 1000);
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  if(!toast) return;
+  toast.innerText = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2000);
+}

@@ -4,6 +4,8 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>QuickBite Kiosk</title>
+<!-- FIX: Included ws:// endpoints for Live Server and allowed the correct Google Font paths -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' http://localhost:5000 http://127.0.0.1:5500 http://127.0.0.1:5000 http://localhost:3000 ws://127.0.0.1:5500 ws://localhost:5500; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com;">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="style.css"/>
 </head>
@@ -67,6 +69,7 @@
       <div class="cat-icon-wrap">🍦</div>
       <div class="cat-label">Desserts</div>
     </div>
+    <!-- FIX: Removed var-meals inline crash snippet -->
     <div class="cat-item" onclick="setCategory(this,'Value Meals')">
       <div class="cat-icon-wrap">🎁</div>
       <div class="cat-label">Value Meals</div>
