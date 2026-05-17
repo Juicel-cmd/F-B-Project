@@ -1,30 +1,34 @@
 require('dotenv').config();
 
 const express = require('express');
-const cors = require('cors'); 
+const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const path = require('path');
 
-const { pool } = require('../src/database/db');
-const authRouter = require('../src/routes/authRoute');
+const { pool } = require('./src/database/db');
+const authRouter = require('./src/routes/authRoute');
+// ✅ FIXED: cartRouter is now imported and registered
+const cartRouter = require('./src/routes/cartRoutes');
 
 const app = express();
 
 // MIDDLEWARE
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://127.0.0.1:5500', 'http://localhost:5500'], 
-  credentials: true 
+    origin: ['http://localhost:3000', 'http://127.0.0.1:5500', 'http://localhost:5500'],
+    credentials: true
 }));
 app.use(express.json());
 app.use(cookieParser());
 
 // SERVE STATIC FRONTEND FILES
-app.use(express.static(path.join(__dirname, 'Frontend')));
+app.use(express.static(path.join(__dirname, 'frontend')));
 
 // ROUTES
 app.use('/auth', authRouter);
+// ✅ FIXED: cart routes now active
+app.use('/cart', cartRouter);
 
-// FIX 1: Move your root route to a specific path like '/db-test' so it doesn't hijack your website's home path
+// DATABASE TEST ROUTE
 app.get('/db-test', async (req, res) => {
     try {
         console.log("Start");
@@ -37,6 +41,7 @@ app.get('/db-test', async (req, res) => {
     }
 });
 
+// RESERVATION ROUTE
 app.post('/reservation', async (req, res) => {
     try {
         const { name, email, date, time } = req.body;
@@ -51,13 +56,13 @@ app.post('/reservation', async (req, res) => {
     }
 });
 
-// FIX 2: Explicit fallback route to safely load your kiosk homepage on root paths
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'Frontend', 'index.html'));
+// FALLBACK ROUTE
+app.get('*path', (req, res) => {
+    res.sendFile(path.join(__dirname, 'frontend', 'index.html'));
 });
 
-// START EXPRESS RUNTIME
-const PORT = 5000;
+// START SERVER
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });

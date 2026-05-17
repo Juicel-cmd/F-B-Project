@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>QuickBite — Home</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --red:#DA1B1B;
+  --red-dark:#B01515;
+  --red-light:#FF3B3B;
+  --yellow:#FFC107;
+  --yellow-dark:#E5A200;
+  --bg:#1A1A1A;
+  --surface:#242424;
+  --surface2:#2E2E2E;
+  --surface3:#383838;
+  --border:#3A3A3A;
+  --text:#FFFFFF;
+  --text-muted:#A0A0A0;
+  --green:#2ECC71;
+  --radius:14px;
+  --radius-sm:8px;
+}
+html,body{
+  font-family:'Barlow',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+}
+
+/* ── NAV ── */
+nav{
+  background:var(--red);
+  height:70px;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 2rem;
+  position:sticky;top:0;z-index:100;
+  box-shadow:0 4px 20px rgba(0,0,0,0.5);
+}
+nav::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;
+  height:3px;background:var(--yellow);
+}
+.brand{display:flex;align-items:center;gap:12px;}
+.brand-logo{
+  width:44px;height:44px;border-radius:50%;
+  background:var(--yellow);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.6rem;font-weight:900;color:var(--red-dark);
+  font-family:'Barlow Condensed',sans-serif;
+  box-shadow:0 2px 12px rgba(0,0,0,0.3);
+}
+.brand-name{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:2rem;font-weight:900;
+  color:#fff;letter-spacing:0.04em;text-transform:uppercase;
+}
+.brand-name span{color:var(--yellow);}
+.nav-links{display:flex;align-items:center;gap:8px;}
+.nav-link{
+  color:rgba(255,255,255,0.8);
+  text-decoration:none;
+  font-weight:600;font-size:0.9rem;
+  padding:8px 14px;border-radius:var(--radius-sm);
+  transition:all 0.2s;letter-spacing:0.03em;
+  text-transform:uppercase;
+}
+.nav-link:hover{background:rgba(255,255,255,0.12);color:#fff;}
+.nav-link.active{background:rgba(255,255,255,0.15);color:#fff;}
+.nav-user{
+  display:flex;align-items:center;gap:12px;
+}
+.nav-username{
+  color:var(--yellow);font-weight:700;font-size:0.9rem;
+  display:flex;align-items:center;gap:6px;
+}
+.btn-nav{
+  padding:8px 18px;border-radius:var(--radius-sm);
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:1rem;font-weight:700;letter-spacing:0.05em;
+  text-transform:uppercase;cursor:pointer;border:none;
+  transition:all 0.2s;
+}
+.btn-login{background:var(--yellow);color:#1A1A1A;}
+.btn-login:hover{background:#FFD740;}
+.btn-logout{background:rgba(255,255,255,0.15);color:#fff;border:1px solid rgba(255,255,255,0.3);}
+.btn-logout:hover{background:rgba(255,255,255,0.25);}
+.btn-kiosk{
+  background:var(--yellow);color:#1A1A1A;
+  display:flex;align-items:center;gap:6px;
+}
+.btn-kiosk:hover{background:#FFD740;}
+
+/* ── HERO ── */
+.hero{
+  min-height:520px;
+  background:
+    radial-gradient(ellipse at 70% 50%, rgba(218,27,27,0.25) 0%, transparent 65%),
+    radial-gradient(ellipse at 20% 80%, rgba(255,193,7,0.1) 0%, transparent 55%),
+    var(--bg);
+  display:flex;align-items:center;
+  padding:4rem 2rem;
+  position:relative;
+  overflow:hidden;
+}
+.hero::before{
+  content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(
+    -45deg,transparent,transparent 60px,rgba(255,255,255,0.012) 60px,rgba(255,255,255,0.012) 61px
+  );
+}
+.hero-content{max-width:600px;position:relative;z-index:1;}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(218,27,27,0.2);border:1px solid rgba(218,27,27,0.4);
+  color:var(--red-light);font-size:0.8rem;font-weight:700;
+  padding:6px 14px;border-radius:20px;
+  letter-spacing:0.08em;text-transform:uppercase;margin-bottom:20px;
+}
+.hero h1{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:clamp(3rem,7vw,5.5rem);font-weight:900;
+  line-height:0.95;text-transform:uppercase;letter-spacing:0.02em;
+  margin-bottom:20px;
+}
+.hero h1 span{color:var(--yellow);}
+.hero-sub{
+  font-size:1.1rem;color:var(--text-muted);
+  line-height:1.6;max-width:480px;margin-bottom:32px;
+}
+.hero-actions{display:flex;gap:14px;flex-wrap:wrap;}
+.btn-hero{
+  padding:16px 32px;border-radius:var(--radius);
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:1.3rem;font-weight:900;letter-spacing:0.06em;
+  text-transform:uppercase;cursor:pointer;border:none;
+  text-decoration:none;display:inline-flex;align-items:center;gap:8px;
+  transition:all 0.2s;
+}
+.btn-hero-primary{
+  background:var(--yellow);color:#1A1A1A;
+  box-shadow:0 4px 20px rgba(255,193,7,0.4);
+}
+.btn-hero-primary:hover{background:#FFD740;box-shadow:0 6px 28px rgba(255,193,7,0.55);transform:translateY(-2px);}
+.btn-hero-secondary{
+  background:transparent;color:#fff;
+  border:2px solid rgba(255,255,255,0.25);
+}
+.btn-hero-secondary:hover{border-color:rgba(255,255,255,0.5);background:rgba(255,255,255,0.05);}
+.hero-emoji{
+  position:absolute;right:8%;top:50%;transform:translateY(-50%);
+  font-size:clamp(8rem,15vw,14rem);
+  animation:float 3s ease-in-out infinite;
+  filter:drop-shadow(0 20px 40px rgba(0,0,0,0.5));
+  user-select:none;
+}
+@keyframes float{
+  0%,100%{transform:translateY(-50%);}
+  50%{transform:translateY(calc(-50% - 18px));}
+}
+
+/* ── STRIP ── */
+.strip{
+  height:10px;
+  background:repeating-linear-gradient(
+    90deg,var(--red) 0,var(--red) 30px,var(--yellow) 30px,var(--yellow) 60px
+  );
+}
+
+/* ── FEATURES ── */
+.features{
+  padding:4rem 2rem;
+  max-width:1100px;margin:0 auto;
+}
+.section-label{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:0.8rem;font-weight:700;letter-spacing:0.15em;
+  text-transform:uppercase;color:var(--red-light);
+  margin-bottom:10px;
+}
+.section-title{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:2.5rem;font-weight:900;text-transform:uppercase;
+  letter-spacing:0.04em;margin-bottom:40px;
+}
+.section-title span{color:var(--yellow);}
+.features-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:20px;
+}
+.feature-card{
+  background:var(--surface);border:1.5px solid var(--border);
+  border-radius:var(--radius);padding:28px 24px;
+  transition:border-color 0.2s,transform 0.2s;
+}
+.feature-card:hover{border-color:#555;transform:translateY(-4px);}
+.feature-icon{font-size:2.5rem;margin-bottom:16px;}
+.feature-title{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:1.3rem;font-weight:900;text-transform:uppercase;
+  letter-spacing:0.04em;margin-bottom:8px;
+}
+.feature-desc{font-size:0.88rem;color:var(--text-muted);line-height:1.6;}
+
+/* ── MENU PREVIEW ── */
+.menu-preview{
+  background:var(--surface);
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  padding:4rem 2rem;
+}
+.menu-preview-inner{max-width:1100px;margin:0 auto;}
+.menu-cards{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:16px;margin-top:32px;
+}
+.menu-card{
+  background:var(--surface2);border:1.5px solid var(--border);
+  border-radius:var(--radius);overflow:hidden;
+  transition:all 0.2s;cursor:pointer;
+}
+.menu-card:hover{border-color:var(--yellow);transform:translateY(-3px);}
+.menu-card-img{
+  height:110px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:3.5rem;background:var(--surface3);
+}
+.menu-card-body{padding:14px;}
+.menu-card-name{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:1.05rem;font-weight:900;text-transform:uppercase;
+  margin-bottom:4px;
+}
+.menu-card-price{
+  font-size:1.1rem;font-weight:700;color:var(--yellow);
+  font-family:'Barlow Condensed',sans-serif;
+}
+.menu-card-desc{font-size:0.75rem;color:var(--text-muted);margin-top:4px;line-height:1.4;}
+
+/* ── RESERVATION ── */
+#reservation{
+  padding:4rem 2rem;
+  max-width:1100px;margin:0 auto;
+}
+.reservation-wrap{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:40px;align-items:start;
+}
+@media(max-width:700px){
+  .reservation-wrap{grid-template-columns:1fr;}
+  .hero-emoji{display:none;}
+}
+.reservation-info h3{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:1.2rem;font-weight:700;text-transform:uppercase;
+  color:var(--text-muted);letter-spacing:0.08em;margin-bottom:16px;
+}
+.reservation-info ul{list-style:none;display:flex;flex-direction:column;gap:12px;}
+.reservation-info li{
+  display:flex;align-items:flex-start;gap:12px;
+  font-size:0.9rem;color:var(--text-muted);line-height:1.5;
+}
+.reservation-info li span:first-child{font-size:1.3rem;flex-shrink:0;}
+.res-form{
+  background:var(--surface);border:1.5px solid var(--border);
+  border-radius:var(--radius);overflow:hidden;
+}
+.res-form-top{
+  background:var(--red);padding:20px 24px;
+  position:relative;
+}
+.res-form-top::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;
+  height:3px;background:var(--yellow);
+}
+.res-form-top h3{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:1.6rem;font-weight:900;text-transform:uppercase;
+  letter-spacing:0.06em;color:#fff;
+}
+.res-form-top p{font-size:0.82rem;color:rgba(255,255,255,0.7);margin-top:4px;}
+.res-form-body{padding:24px;display:flex;flex-direction:column;gap:14px;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.field{display:flex;flex-direction:column;gap:6px;}
+.field label{
+  font-size:0.75rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:0.06em;
+  color:var(--text-muted);
+}
+.field input{
+  padding:13px 16px;
+  background:var(--surface2);border:1.5px solid var(--border);
+  border-radius:var(--radius-sm);color:#fff;
+  font-family:'Barlow',sans-serif;font-size:0.95rem;
+  outline:none;transition:border-color 0.2s,box-shadow 0.2s;
+}
+.field input::placeholder{color:var(--text-muted);}
+.field input:focus{
+  border-color:var(--yellow);
+  box-shadow:0 0 0 3px rgba(255,193,7,0.12);
+}
+.btn-reserve{
+  width:100%;padding:16px;
+  background:var(--yellow);color:#1A1A1A;
+  border:none;border-radius:var(--radius);
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:1.3rem;font-weight:900;letter-spacing:0.06em;
+  text-transform:uppercase;cursor:pointer;
+  box-shadow:0 4px 16px rgba(255,193,7,0.35);
+  transition:all 0.2s;
+}
+.btn-reserve:hover{background:#FFD740;box-shadow:0 6px 24px rgba(255,193,7,0.5);}
+.btn-reserve:active{transform:scale(0.97);}
+#res-message{
+  text-align:center;font-size:0.85rem;font-weight:600;
+  color:var(--red-light);min-height:18px;
+}
+#res-message.success{color:var(--green);}
+
+/* ── FOOTER ── */
+footer{
+  background:var(--surface);
+  border-top:1px solid var(--border);
+  padding:2rem;text-align:center;
+}
+.footer-brand{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:1.8rem;font-weight:900;text-transform:uppercase;
+  letter-spacing:0.06em;margin-bottom:8px;
+}
+.footer-brand span{color:var(--yellow);}
+.footer-text{font-size:0.8rem;color:var(--text-muted);}
+.footer-strip{
+  height:6px;
+  background:repeating-linear-gradient(
+    90deg,var(--red) 0,var(--red) 20px,var(--yellow) 20px,var(--yellow) 40px
+  );
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="brand">
+    <div class="brand-logo">QB</div>
+    <div class="brand-name">Quick<span>Bite</span></div>
+  </div>
+  <div class="nav-links">
+    <a href="home.html" class="nav-link active">Home</a>
+    <a href="index.html" class="nav-link">Kiosk</a>
+    <a href="#reservation" class="nav-link">Reserve</a>
+  </div>
+  <div class="nav-user" id="nav-user">
+    <!-- filled by JS -->
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-badge">🔥 Now Open — Dine In & Take Out</div>
+    <h1>Taste The<br><span>Bold</span><br>Side of Fast</h1>
+    <p class="hero-sub">Smash burgers, crispy chicken, rice meals & more — served fast, made fresh. Order at our kiosk or reserve your table today.</p>
+    <div class="hero-actions">
+      <a href="index.html" class="btn-hero btn-hero-primary">🍔 Order Now</a>
+      <a href="#reservation" class="btn-hero btn-hero-secondary">📅 Reserve a Table</a>
+    </div>
+  </div>
+  <div class="hero-emoji">🍔</div>
+</section>
+
+<div class="strip"></div>
+
+<!-- FEATURES -->
+<section class="features">
+  <div class="section-label">Why QuickBite?</div>
+  <div class="section-title">Fast. <span>Fresh.</span> Flavourful.</div>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">⚡</div>
+      <div class="feature-title">Lightning Fast</div>
+      <div class="feature-desc">Your order is ready in 5–8 minutes. No waiting, no fuss — just great food served fast.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🥩</div>
+      <div class="feature-title">Fresh Ingredients</div>
+      <div class="feature-desc">Every patty smashed to order. Every ingredient sourced fresh daily. No frozen shortcuts.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📱</div>
+      <div class="feature-title">Easy Ordering</div>
+      <div class="feature-desc">Walk up to our self-service kiosk and tap your way to a perfect meal in seconds.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">💰</div>
+      <div class="feature-title">Value Meals</div>
+      <div class="feature-desc">Burger + Fries + Drink starting at ₱149. Great food shouldn't break the bank.</div>
+    </div>
+  </div>
+</section>
+
+<!-- MENU PREVIEW -->
+<section class="menu-preview">
+  <div class="menu-preview-inner">
+    <div class="section-label">What's Hot</div>
+    <div class="section-title">Fan <span>Favourites</span></div>
+    <div class="menu-cards">
+      <div class="menu-card" onclick="window.location.href='index.html'">
+        <div class="menu-card-img">🍔</div>
+        <div class="menu-card-body">
+          <div class="menu-card-name">Classic Smash Burger</div>
+          <div class="menu-card-price">₱189</div>
+          <div class="menu-card-desc">Double smashed patty, American cheese, pickles & special sauce</div>
+        </div>
+      </div>
+      <div class="menu-card" onclick="window.location.href='index.html'">
+        <div class="menu-card-img">🍗</div>
+        <div class="menu-card-body">
+          <div class="menu-card-name">Crispy Fried Chicken</div>
+          <div class="menu-card-price">₱179</div>
+          <div class="menu-card-desc">3-piece golden-fried chicken, seasoned with secret spices</div>
+        </div>
+      </div>
+      <div class="menu-card" onclick="window.location.href='index.html'">
+        <div class="menu-card-img">🍟</div>
+        <div class="menu-card-body">
+          <div class="menu-card-name">Cheese Fries</div>
+          <div class="menu-card-price">₱99</div>
+          <div class="menu-card-desc">Loaded with creamy nacho cheese sauce</div>
+        </div>
+      </div>
+      <div class="menu-card" onclick="window.location.href='index.html'">
+        <div class="menu-card-img">🎁</div>
+        <div class="menu-card-body">
+          <div class="menu-card-name">QB Value Meal 1</div>
+          <div class="menu-card-price">₱149</div>
+          <div class="menu-card-desc">Cheeseburger + Small Fries + Medium Cola</div>
+        </div>
+      </div>
+      <div class="menu-card" onclick="window.location.href='index.html'">
+        <div class="menu-card-img">🥤</div>
+        <div class="menu-card-body">
+          <div class="menu-card-name">Chocolate Shake</div>
+          <div class="menu-card-price">₱95</div>
+          <div class="menu-card-desc">Thick, creamy chocolate milkshake</div>
+        </div>
+      </div>
+      <div class="menu-card" onclick="window.location.href='index.html'">
+        <div class="menu-card-img">🍦</div>
+        <div class="menu-card-body">
+          <div class="menu-card-name">Soft Serve Cone</div>
+          <div class="menu-card-price">₱39</div>
+          <div class="menu-card-desc">Classic creamy vanilla soft serve</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RESERVATION -->
+<section id="reservation">
+  <div class="section-label" style="padding-top:4rem;padding-left:2rem;">Book a Table</div>
+  <div style="padding:0 2rem;margin-bottom:32px;">
+    <div class="section-title">Reserve Your <span>Spot</span></div>
+  </div>
+  <div class="reservation-wrap" style="padding:0 2rem 4rem;">
+    <div class="reservation-info">
+      <h3>What to Expect</h3>
+      <ul>
+        <li><span>📍</span><span>We're located at the heart of the city — easy to find, easier to love.</span></li>
+        <li><span>🕐</span><span>Open daily from 7:00 AM to 10:00 PM. Breakfast, lunch, dinner — we've got you.</span></li>
+        <li><span>👥</span><span>Tables for 1 to 10 guests. Perfect for solo meals, dates, and family feasts.</span></li>
+        <li><span>✅</span><span>Reservation confirmation sent to your email within minutes.</span></li>
+        <li><span>📞</span><span>Need help? Call us at (02) 8-QUICKBITE.</span></li>
+      </ul>
+    </div>
+    <div class="res-form">
+      <div class="res-form-top">
+        <h3>Book a Table</h3>
+        <p>Fill in the details and we'll save your spot</p>
+      </div>
+      <div class="res-form-body">
+        <div class="form-row">
+          <div class="field">
+            <label>Full Name</label>
+            <input type="text" id="name" placeholder="Juan dela Cruz"/>
+          </div>
+          <div class="field">
+            <label>Email</label>
+            <input type="email" id="email" placeholder="juan@email.com"/>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="field">
+            <label>Date</label>
+            <input type="date" id="date"/>
+          </div>
+          <div class="field">
+            <label>Time</label>
+            <input type="time" id="time"/>
+          </div>
+        </div>
+        <button class="btn-reserve" onclick="submitReservation()">Reserve My Table →</button>
+        <p id="res-message"></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<div class="footer-strip"></div>
+<footer>
+  <div class="footer-brand">Quick<span>Bite</span></div>
+  <div class="footer-text">© 2025 QuickBite. All rights reserved. Fast food, real flavour.</div>
+</footer>
+
+<script>
+// ── AUTH ──────────────────────────────────────────────────
+const user = JSON.parse(localStorage.getItem('user'));
+const navUser = document.getElementById('nav-user');
+
+if (user) {
+  navUser.innerHTML = `
+    <span class="nav-username">👤 ${user.username}</span>
+    <button class="btn-nav btn-kiosk" onclick="window.location.href='index.html'">🍔 Kiosk</button>
+    <button class="btn-nav btn-logout" onclick="logout()">Logout</button>
+  `;
+} else {
+  navUser.innerHTML = `
+    <button class="btn-nav btn-login" onclick="window.location.href='login.html'">Login / Register</button>
+  `;
+  // Hide reservation if not logged in
+  document.getElementById('reservation').style.display = 'none';
+}
+
+async function logout() {
+  try {
+    await fetch('http://localhost:3000/auth/logout', {
+      method: 'POST',
+      credentials: 'include'
+    });
+  } catch(e) {}
+  localStorage.removeItem('user');
+  window.location.href = 'login.html';
+}
+
+// ── RESERVATION ───────────────────────────────────────────
+async function submitReservation() {
+  const name  = document.getElementById('name').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const date  = document.getElementById('date').value;
+  const time  = document.getElementById('time').value;
+  const msg   = document.getElementById('res-message');
+
+  if (!name || !email || !date || !time) {
+    msg.textContent = 'Please fill in all fields.';
+    msg.className = '';
+    return;
+  }
+
+  msg.textContent = 'Sending reservation...';
+  msg.className = '';
+
+  try {
+    const response = await fetch('http://localhost:3000/reservation', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ name, email, date, time })
+    });
+    const data = await response.json();
+    if (response.ok) {
+      msg.textContent = '✅ ' + (data.message || 'Reservation confirmed!');
+      msg.className = 'success';
+      document.getElementById('name').value = '';
+      document.getElementById('email').value = '';
+      document.getElementById('date').value = '';
+      document.getElementById('time').value = '';
+    } else {
+      msg.textContent = data.message || 'Reservation failed.';
+      msg.className = '';
+    }
+  } catch (err) {
+    console.error(err);
+    msg.textContent = 'Could not connect to server.';
+    msg.className = '';
+  }
+}
+</script>
+
+</body>
+</html>

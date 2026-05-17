@@ -1,26 +1,33 @@
-import jwt from 'jsonwebtoken';
-import pool from '../config/db.js';
+const jwt = require('jsonwebtoken');
+const { pool } = require('../database/db');
 
-export const protect = async (req, res, next) => {
-try {
-const token = req.cookies.token;
-if (!token) {
+const protect = async (req, res, next) => {
+    try {
+        const token = req.cookies.token;
 
-    return res.status(401).json({ message: 'Not authorized, no token' });
+        if (!token) {
+            return res.status(401).json({ message: 'Not authorized, no token' });
+        }
 
-}
-const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await pool.query('SELECT id , name, email FROM users WHERE id = $1',
-         [decoded.id]);
-if (!user.rows.length == 0  ) {
-    return res.status(401).json({ message: 'Not authorized, user not found' });
-}
-req.user = user.rows[0];
-next();
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-}catch (error) { 
+        const user = await pool.query(
+            'SELECT id, name, email FROM users WHERE id = $1',
+            [decoded.id]
+        );
 
-    console.error(error);
-    res.status(401).json({ message: 'Not authorized, token failed' });
-}
-}
+        // ✅ FIXED: was (!user.rows.length == 0) which is always false
+        if (user.rows.length === 0) {
+            return res.status(401).json({ message: 'Not authorized, user not found' });
+        }
+
+        req.user = user.rows[0];
+        next();
+
+    } catch (error) {
+        console.error(error);
+        res.status(401).json({ message: 'Not authorized, token failed' });
+    }
+};
+
+module.exports = { protect };
