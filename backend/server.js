@@ -14,14 +14,14 @@ const app = express();
 
 // MIDDLEWARE
 app.use(cors({
-    origin: ['http://localhost:3000', 'http://127.0.0.1:5500', 'http://localhost:5500'],
+    origin: ['http://localhost:5000', 'http://127.0.0.1:5000', 'http://localhost:5000'],
     credentials: true
 }));
 app.use(express.json());
 app.use(cookieParser());
 
 // SERVE STATIC FRONTEND FILES
-app.use(express.static(path.join(__dirname, '..', 'frontend')));
+app.use(express.static(path.join(__dirname, '..', 'Frontend')));
 
 // ROUTES
 app.use('/auth', authRouter);
@@ -56,9 +56,31 @@ app.post('/reservation', async (req, res) => {
     }
 });
 
+
+// ORDER ROUTE
+app.post('/orders', async (req, res) => {
+    try {
+        const { customer_name, customer_email, items, total, notes, order_type } = req.body;
+
+        console.log('Order received:', req.body); // debug
+
+        const result = await pool.query(
+            `INSERT INTO orders (customer_name, customer_email, items, total, notes, order_type, status)
+             VALUES ($1, $2, $3, $4, $5, $6, 'pending')
+             RETURNING *`,
+            [customer_name, customer_email, JSON.stringify(items), total, notes || '', order_type || 'dine-in']
+        );
+
+        res.status(201).json({ message: 'Order placed successfully', order: result.rows[0] });
+    } catch (error) {
+        console.error('Order error:', error);
+        res.status(500).json({ message: 'Order failed', error: error.message });
+    }
+});
+
 // FALLBACK ROUTE
 app.get('*path', (req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'frontend', 'index.html'));
+    res.sendFile(path.join(__dirname, '..', 'Frontend', 'index.html'));
 });
 
 // START SERVER
