@@ -117,7 +117,6 @@ function renderUserArea() {
 async function fetchPoints() {
   if (!currentUser) return;
   try {
-    // FIX: Redirected from 3000 to correct backend port 5000
     const res = await fetch(`http://localhost:5000/points/${currentUser.username}`, {
       credentials: 'include'
     });
@@ -138,7 +137,6 @@ function updatePointsDisplay() {
 
 async function logout() {
   try {
-    // FIX: Redirected port mapping configuration to port 5000
     await fetch('http://localhost:5000/auth/logout', {
       method: 'POST',
       credentials: 'include'
@@ -154,7 +152,6 @@ async function logout() {
 async function addPoints(pointsToAdd) {
   if (!currentUser) return 0;
   try {
-    // FIX: Target system API endpoints switched to port 5000
     const res = await fetch('http://localhost:5000/points/add', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -263,23 +260,66 @@ function updatePrices(subtotal) {
   document.getElementById('total').innerText = `₱${total.toFixed(2)}`;
 }
 
+// ── CHECKOUT ─────────────────────────────────────────────
 async function checkout() {
-  const totalAmount = parseFloat(document.getElementById('total').innerText.replace('₱', ''));
+  const subtotal = cart.reduce((s, i) => s + i.price * i.quantity, 0);
+  const vat = subtotal * 0.12;
+  const totalAmount = parseFloat((subtotal + vat).toFixed(2));
   const randomOrderNum = Math.floor(Math.random() * 90) + 10;
-  document.getElementById('modal-num').innerText = randomOrderNum;
 
-  if (currentUser) {
-    const earned = Math.floor(totalAmount / 50); 
-    const finalPoints = await addPoints(earned);
+  // Disable button to prevent double clicks
+  const btn = document.getElementById('checkout-btn');
+  btn.disabled = true;
+  btn.innerText = 'Placing Order...';
 
-    document.getElementById('pts-earned-text').innerText = `+${earned} pts earned!`;
-    document.getElementById('pts-total-text').innerText = finalPoints;
-    document.getElementById('points-earned').style.display = 'block';
-  } else {
-    document.getElementById('points-earned').style.display = 'none';
+  // Build order payload for backend
+  const orderPayload = {
+    customer_name: currentUser ? currentUser.username : 'Guest',
+    customer_email: currentUser ? (currentUser.email || '') : '',
+    items: cart.map(i => ({ name: i.name, price: i.price, qty: i.quantity })),
+    total: totalAmount,
+    order_type: dineMode,
+    notes: ''
+  };
+
+  try {
+    const res = await fetch('http://localhost:5000/orders', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(orderPayload)
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      showToast('Order failed: ' + (data.message || 'Please try again'));
+      btn.disabled = false;
+      btn.innerText = 'Place Order →';
+      return;
+    }
+
+    // ✅ Order saved — now show confirmation modal
+    document.getElementById('modal-num').innerText = randomOrderNum;
+
+    if (currentUser) {
+      const earned = Math.floor(totalAmount / 50);
+      const finalPoints = await addPoints(earned);
+      document.getElementById('pts-earned-text').innerText = `+${earned} pts earned!`;
+      document.getElementById('pts-total-text').innerText = finalPoints;
+      document.getElementById('points-earned').style.display = 'block';
+    } else {
+      document.getElementById('points-earned').style.display = 'none';
+    }
+
+    document.getElementById('modal').classList.add('active');
+
+  } catch (err) {
+    console.error('Checkout error:', err);
+    showToast('Connection failed. Is the server running on port 5000?');
+    btn.disabled = false;
+    btn.innerText = 'Place Order →';
   }
-
-  document.getElementById('modal').classList.add('active');
 }
 
 function closeModal() {
